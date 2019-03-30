@@ -37,6 +37,7 @@ var/list/diseases = subtypesof(/datum/disease)
 	var/visibility_flags = 0
 	var/disease_flags = CURABLE|CAN_CARRY|CAN_RESIST
 	var/spread_flags = AIRBORNE
+	var/resist_probability = 100
 
 	//Fluff
 	var/form = "Virus"
@@ -139,7 +140,8 @@ var/list/diseases = subtypesof(/datum/disease)
 	if(affected_mob)
 		if(disease_flags & CAN_RESIST)
 			if(!(type in affected_mob.resistances))
-				affected_mob.resistances += type
+				if(prob(resist_probability))
+					affected_mob.resistances += type
 		remove_virus()
 	qdel(src)
 

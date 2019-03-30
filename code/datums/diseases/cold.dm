@@ -1,10 +1,12 @@
 /datum/disease/cold
 	name = "The Cold"
 	max_stages = 3
-	spread_flags = AIRBORNE
-	cure_text = "Rest & Spaceacillin"
-	cures = list("spaceacillin")
-	agent = "XY-rhinovirus"
+	spread_text = "Airborne"
+	resist_probability = 25
+	cure_text = "Sleep"
+	cures = list("chickensoup")
+	cure_chance = 10
+	agent = "mucus"
 	viable_mobtypes = list(/mob/living/carbon/human, /mob/living/carbon/human/monkey)
 	permeability_mod = 0.5
 	desc = "If left untreated the subject will contract the flu."
@@ -12,48 +14,36 @@
 
 /datum/disease/cold/stage_act()
 	..()
+	if(affected_mob.sleeping && prob(33))
+		to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
+		cure()
+		return
 	switch(stage)
 		if(2)
-/*
-			if(affected_mob.sleeping && prob(40))  //removed until sleeping is fixed
+			if(prob(1) && prob(10))
 				to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
 				cure()
 				return
-*/
-			if(affected_mob.lying && prob(40))  //changed FROM prob(10) until sleeping is fixed
-				to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
-				cure()
-				return
-			if(prob(1) && prob(5))
-				to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
-				cure()
-				return
-			if(prob(1))
+			if(prob(5))
 				affected_mob.emote("sneeze")
-			if(prob(1))
+			if(prob(5))
 				affected_mob.emote("cough")
 			if(prob(1))
 				to_chat(affected_mob, "<span class='danger'>Your throat feels sore.</span>")
 			if(prob(1))
 				to_chat(affected_mob, "<span class='danger'>Mucous runs down the back of your throat.</span>")
 		if(3)
-/*
-			if(affected_mob.sleeping && prob(25))  //removed until sleeping is fixed
+			if(affected_mob.sleeping && prob(25))
 				to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
 				cure()
 				return
-*/
-			if(affected_mob.lying && prob(25))  //changed FROM prob(5) until sleeping is fixed
+			if(prob(1) && prob(10))
 				to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
 				cure()
 				return
-			if(prob(1) && prob(1))
-				to_chat(affected_mob, "<span class='notice'>You feel better.</span>")
-				cure()
-				return
-			if(prob(1))
+			if(prob(5))
 				affected_mob.emote("sneeze")
-			if(prob(1))
+			if(prob(5))
 				affected_mob.emote("cough")
 			if(prob(1))
 				to_chat(affected_mob, "<span class='danger'>Your throat feels sore.</span>")

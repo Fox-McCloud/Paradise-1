@@ -7,7 +7,7 @@
 	cure_text = "Antibiotics"
 	cures = list("spaceacillin")
 	agent = "Grave Dust"
-	cure_chance = 20
+	cure_chance = 100
 	viable_mobtypes = list(/mob/living/carbon/human)
 	severity = DANGEROUS
 	disease_flags = CURABLE

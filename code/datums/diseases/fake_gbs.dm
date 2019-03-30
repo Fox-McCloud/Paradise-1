@@ -5,7 +5,7 @@
 	spread_flags = CONTACT_GENERAL
 	cure_text = "Diphenhydramine & Sulfur"
 	cures = list("diphenhydramine","sulfur")
-	agent = "Gravitokinetic Bipotential SADS-"
+	agent = "gibbis"
 	viable_mobtypes = list(/mob/living/carbon/human, /mob/living/carbon/human/monkey)
 	desc = "If left untreated death will occur."
 	severity = BIOHAZARD

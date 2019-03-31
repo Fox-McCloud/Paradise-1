@@ -10,7 +10,7 @@
 	severity = BIOHAZARD
 	spread_flags = NON_CONTAGIOUS
 	disease_flags = CAN_CARRY
-	bypasses_immunity = TRUE //Kuru is a prion disorder, not a virus
+	bypasses_immunity = TRUE
 	virus_heal_resistant = TRUE
 
 /datum/disease/space_aids/stage_act()
@@ -38,6 +38,7 @@
 			if(prob(8))
 				to_chat(affected_mob, "<span class='warning'>[pick("It feels like you could drop dead any second...","Pain and nausea wrack your entire body.")]</span>")
 			if(prob(5))
-				for(var/datum/disease/D in subtypesof(/datum/disease) - /datum/disease/critical - typesof(/datum/disease/advance))
+				for(var/thing in (subtypesof(/datum/disease) - /datum/disease/critical - typesof(/datum/disease/advance)))
+					var/datum/disease/D = thing
 					if(prob(10))
-						affected_mob.ForceContractDisease(new D.type(0))
+						affected_mob.ForceContractDisease(new D)

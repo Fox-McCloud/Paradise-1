@@ -272,6 +272,14 @@
 	required_reagents = list("sodium" = 1, "hydrogen" = 1, "oxygen" = 1)
 	result_amount = 3
 
+/datum/chemical_reaction/rotting
+	name = "rotting"
+	id = "rotting"
+	result = "rotting"
+	required_reagents = list("????" = 1, "enzyme" = 1, "something" = 1)
+	result_amount = 3
+	mix_message = "The substance gives off a terrible stench. Are those maggots?"
+
 /datum/chemical_reaction/love
 	name = "pure love"
 	id = "love"

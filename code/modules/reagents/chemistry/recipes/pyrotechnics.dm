@@ -175,6 +175,14 @@
 		spawn(0)
 			qdel(holder.my_atom)
 
+/datum/chemical_reaction/something
+	name = "Something"
+	id = "something"
+	result = "something"
+	required_reagents = list("sorium" = 1, "liquid_dark_matter" = 1)
+	result_amount = 2
+	mix_message = "The solution swirls violently and forms...something."
+
 datum/chemical_reaction/flash_powder
 	name = "Flash powder"
 	id = "flash_powder"

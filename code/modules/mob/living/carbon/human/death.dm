@@ -151,11 +151,19 @@
 	update_head_accessory(0)
 	update_markings(0)
 
-	mutations.Add(SKELETON)
-	mutations.Add(NOCLONE)
+	mutations |= SKELETON
+	mutations |=NOCLONE
 	update_body(0)
 	update_mutantrace()
-	return
+
+/mob/living/carbon/human/proc/removeSkeleton()
+	var/obj/item/organ/external/head/H = get_organ("head")
+	if(istype(H))
+		H.disfigured = FALSE
+	mutations.Remove(SKELETON)
+	mutations.Remove(NOCLONE)
+	update_body(0)
+	update_mutantrace()
 
 /mob/living/carbon/human/proc/ChangeToHusk()
 	var/obj/item/organ/external/head/H = bodyparts_by_name["head"]

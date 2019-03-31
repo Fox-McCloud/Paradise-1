@@ -11,6 +11,23 @@
 			M.ForceContractDisease(new disease(0))
 	return ..()
 
+/datum/reagent/disease/vampire_serum
+	name = "vampire serum"
+	id = "vampire_serum"
+	description = "A sinister blood-like fluid. It smells evil, somehow."
+	reagent_state = LIQUID
+	color = "#960000"
+	disease = /datum/disease/vampiritis
+
+/datum/reagent/disease/lycanthropy
+	name = "werewolf serum"
+	id = "werewolf_serum"
+	description = "A mutagenic substance associated with a mythical beast."
+	reagent_state = LIQUID
+	infection_volume = 0
+	color = "#AD4185"
+	disease = /datum/disease/lycanthropy
+
 /datum/reagent/disease/mucus
 	name = "mucus"
 	id = "mucus"
@@ -72,7 +89,7 @@
 	color = "#1E4600"
 	disease = /datum/disease/food_poisoning
 
-/datum/reagent/disease/mrsa // for infected wounds
+/datum/reagent/disease/mrsa
 	name = "MRSA"
 	id = "mrsa"
 	description = "A virulent bacteria that often strikes dirty hospitals."
@@ -87,16 +104,23 @@
 	reagent_state = LIQUID
 	infection_volume = 0
 	color = "#000000"
-	disease = /datum/disease/panacaea
+	disease = /datum/disease/panacea
+
+/datum/reagent/disease/rotting
+	name = "rotting"
+	id = "rotting"
+	description = "A virus that causes tissue to rot."
+	reagent_state = LIQUID
+	color = "#810000"
+	penetrates_skin = 1
+	disease = /datum/disease/tissue_necrosis
 
 /datum/reagent/disease/hiv
 	name = "HIV"
 	id = "HIV"
 	description = "Human Immunodeficiency Virus. Extremely deadly."
 	reagent_state = LIQUID
-	fluid_r = 255
-	fluid_g = 40
-	fluid_b = 40
+	color = "#FF2828"
 	disease = /datum/disease/space_aids
 
 /datum/reagent/disease/fungalspores
@@ -137,6 +161,14 @@
 	can_synth = FALSE
 	infection_volume = 2.5
 	disease = /datum/disease/gbs/curable
+
+/datum/reagent/disease/banana_peel
+	name = "banana peel"
+	id = "banana peel"
+	description = "Banana peel crushed up to a liquid."
+	reagent_state = LIQUID
+	color = "#FFFF00"
+	disease = /datum/disease/transformation/jungle_fever
 
 /datum/reagent/disease/prions
 	name = "Prions"

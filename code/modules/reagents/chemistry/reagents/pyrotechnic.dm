@@ -291,6 +291,13 @@
 	reagent_state = LIQUID
 	color = "#800080"
 
+/datum/reagent/something
+	name = "something"
+	id = "something"
+	description = "What is this thing?  None of the normal tests have been able to determine what exactly this is, just that it is benign."
+	reagent_state = LIQUID
+	color = "#646464"
+
 /datum/reagent/blackpowder
 	name = "Black Powder"
 	id = "blackpowder"

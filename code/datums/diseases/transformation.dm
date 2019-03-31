@@ -128,6 +128,9 @@
 	stage5	= list("<span class='danger'>Your skin feels as if it's about to burst off!</span>")
 	new_form = /mob/living/silicon/robot
 
+/datum/disease/transformation/robot/do_disease_transformation(mob/living/carbon/human/affected_mob)
+	if(issmall(affected_mob))
+		new_form = pick(/mob/living/simple_animal/bot/secbot, /mob/living/simple_animal/bot/medbot, /mob/living/simple_animal/bot/cleanbot, /mob/living/simple_animal/bot/floorbot)
 
 /datum/disease/transformation/robot/stage_act()
 	..()

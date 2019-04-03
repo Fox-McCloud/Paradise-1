@@ -163,14 +163,29 @@
 		if(!tesla_shock || (tesla_shock && siemens_coeff > 0.5))
 			Stun(3)
 			Weaken(3)
-	if(shock_damage > 200)
-		src.visible_message(
-			"<span class='danger'>[src] was arc flashed by the [source]!</span>", \
-			"<span class='userdanger'>The [source] arc flashes and electrocutes you!</span>", \
-			"<span class='italics'>You hear a lightning-like crack!</span>" \
-		)
-		playsound(loc, 'sound/effects/eleczap.ogg', 50, 1, -1)
-		explosion(src.loc,-1,0,2,2)
+	switch(shock_damage)
+		if(0 to 25)
+			playsound(loc, 'sound/goonstation/effects/electric_shock.ogg', 50, 1)
+		if(26 to 59)
+			playsound(loc, 'sound/goonstation/effects/elec_bzzz.ogg', 50, 1)
+		if(60 to 99)
+			playsound(loc, 'sound/effects/eleczap.ogg', 50, 1)
+			to_chat(src, "<span class='danger'>[source] discharges a violent arc of electricity!</span>")
+			flash_eyes(visual = TRUE)
+		if(100 to INFINITY)
+			playsound(loc, 'sound/effects/eleczap.ogg', 50, 1)
+			flash_eyes(visual = TRUE)
+			var/turf/T = get_turf(src)
+			if(T)
+				T.hotspot_expose(5000, 125)
+				explosion(T, -1, -1, 2, 2)
+			if(prob(20))
+				to_chat(src, "<span class='danger'>[source] vaporizes you with a lethal arc of electricity!</span>")
+				dust()
+			else
+				to_chat(src, "<span class='danger'>[source] blasts you with an arc flash!</span>")
+				if(istype(source))
+					throw_at(get_edge_target_turf(src, get_dir(src, get_step_away(src, source))), 200, 4)
 	if(override)
 		return override
 	else

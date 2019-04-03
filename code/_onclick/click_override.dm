@@ -44,7 +44,7 @@
 
 /datum/middleClickOverride/power_gloves
 	var/last_shocked = 0
-	var/shock_delay = 120
+	var/shock_delay = 40
 
 /datum/middleClickOverride/power_gloves/onClick(var/atom/A, var/mob/living/user)
 	if(user.incapacitated())
@@ -57,12 +57,16 @@
 		return
 	var/mob/living/L = A
 	var/turf/T = get_turf(user)
+	var/turf/target_T = get_turf(L)
 	var/obj/structure/cable/C = locate() in T
 	if(!C || !istype(C))
 		to_chat(user, "<span class='warning'>There is no cable here to power the gloves.</span>")
 		return
-	user.visible_message("<span class='warning'>[user.name] fires an arc of electricity at [L]!</span>", "<span class='warning'>You fire an arc of electricity at [L]!</span>", "You hear the loud crackle of electricity!")
-	playsound(user.loc, 'sound/effects/eleczap.ogg', 75, 1)
-	user.Beam(L,icon_state="lightning[rand(1,12)]",icon='icons/effects/effects.dmi',time=5)
-	electrocute_mob(L, C, user)
+	playsound(user.loc, 'sound/effects/eleczap.ogg', 40, 1)
+	user.Beam(L, icon_state = "lightning[rand(1, 12)]", icon = 'icons/effects/effects.dmi', time = 5)
+	target_T.hotspot_expose(2000, 400)
+	if(user.a_intent == INTENT_DISARM)
+		L.AdjustWeakened(3)
+	else
+		electrocute_mob(L, C, user)
 	last_shocked = world.time

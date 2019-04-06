@@ -41,10 +41,12 @@
 
 /obj/machinery/power/generator/Initialize(mapload)
 	. = ..()
+	SSgenerator.generator_machinery += src
 	connect()
 	update_desc()
 
 /obj/machinery/power/generator/Destroy()
+	SSgenerator.generator_machinery -= src
 	disconnect()
 	return ..()
 
@@ -126,7 +128,7 @@
 				light_color = "#E600E6"
 				set_light(3)
 
-/obj/machinery/power/generator/process()
+/obj/machinery/power/generator/proc/process_generator()
 	if(stat & (NOPOWER|BROKEN))
 		return
 

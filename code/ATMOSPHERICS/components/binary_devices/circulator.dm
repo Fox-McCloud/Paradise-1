@@ -45,11 +45,6 @@
 	var/output_starting_pressure = outlet.return_pressure()
 	var/input_starting_pressure = inlet.return_pressure()
 
-	if(output_starting_pressure >= input_starting_pressure - 10)
-		//Need at least 10 KPa difference to overcome friction in the mechanism
-		last_pressure_delta = 0
-		return null
-
 	//Calculate necessary moles to transfer using PV = nRT
 	if(inlet.temperature > 0)
 		var/pressure_delta = (input_starting_pressure - output_starting_pressure) / 2

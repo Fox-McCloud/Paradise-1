@@ -1,6 +1,7 @@
 /obj/machinery/power/generator
 	name = "thermoelectric generator"
 	desc = "It's a high efficiency thermoelectric generator."
+	icon = 'icons/goonstation/power/power.dmi'
 	icon_state = "teg"
 	anchored = FALSE
 	density = TRUE
@@ -14,7 +15,29 @@
 
 	var/lastgen = 0
 	var/lastgenlev = -1
-	var/lastcirc = "00"
+	var/running = FALSE
+	var/spam_limiter = FALSE
+	var/efficiency_controller = 52
+
+	var/grump = 0 // best var 2013
+	var/grumping = FALSE // is the engine currently doing grumpy things
+
+	var/list/grump_prefix = list("an upsetting", "an unsettling", "a scary", "a loud", "a sassy", "a grouchy", "a grumpy",
+								 "an awful", "a horrible", "a despicable", "a pretty rad", "a godawful")
+
+	var/list/grump_suffix = list("noise", "racket", "ruckus", "sound", "clatter", "fracas", "hubbub")
+
+	var/sound_engine1 = 'sound/goonstation/machines/tractor_running.ogg'
+	var/sound_engine2 = 'sound/goonstation/machines/engine_highpower.ogg'
+	var/sound_tractorrev = 'sound/goonstation/machines/tractorrev.ogg'
+	var/sound_engine_alert1 = 'sound/machines/engine_alert1.ogg'
+	var/sound_engine_alert2 = 'sound/machines/engine_alert2.ogg'
+	var/sound_engine_alert3 = 'sound/goonstation/machines/engine_alert3.ogg'
+	var/sound_bigzap = 'sound/effects/eleczap.ogg'
+	var/sound_bellalert = 'sound/goonstation/machines/bellalert.ogg'
+	var/sound_warningbuzzer = 'sound/machines/warning-buzzer.ogg'
+	var/list/sounds_enginegrump = list('sound/goonstation/machines/engine_grump1.ogg', 'sound/goonstation/machines/engine_grump2.ogg', 'sound/goonstation/machines/engine_grump3.ogg', 'sound/goonstation/machines/engine_grump4.ogg')
+	var/list/sounds_engine = list('sound/goonstation/machines/tractor_running2.ogg', 'sound/goonstation/machines/tractor_running3.ogg')
 
 /obj/machinery/power/generator/Initialize(mapload)
 	. = ..()
@@ -24,6 +47,10 @@
 /obj/machinery/power/generator/Destroy()
 	disconnect()
 	return ..()
+
+/obj/machinery/light_construct/examine(mob/user)
+	..()
+	to_chat(user, "Current Output: [engineering_notation(lastgen)]W")
 
 /obj/machinery/power/generator/proc/update_desc()
 	desc = initial(desc) + " Its cold circulator is located on the [dir2text(cold_dir)] side, and its heat circulator is located on the [dir2text(hot_dir)] side."
@@ -72,9 +99,32 @@
 		overlays.Cut()
 
 		if(lastgenlev != 0)
-			overlays += image('icons/obj/power.dmi', "teg-op[lastgenlev]")
+			overlays += image('icons/goonstation/power/power.dmi', "teg-op[lastgenlev]")
 
-		overlays += image('icons/obj/power.dmi', "teg-oc[lastcirc]")
+		switch(lastgenlev)
+			if(0)
+				set_light(0)
+			if(1 to 11)
+				light_color = "#FFFFFF"
+				set_light(1)
+			if(12 to 15)
+				light_color = "#4D4DE6"
+				set_light(1)
+			if(16 to 17)
+				light_color =  "#E6E61A"
+				set_light(2)
+			if(18 to 22)
+				playsound(src.loc, 'sound/goonstation/effects/elec_bzzz.ogg', 50,0)
+				light_color = "#E61A1A"
+				set_light(2)
+			if(18 to 25)
+				playsound(src.loc, 'sound/effects/eleczap.ogg', 50,0)
+				light_color = "#E61A1A"
+				set_light(3)
+			if(26 to INFINITY)
+				playsound(src.loc, 'sound/goonstation/effects/electric_shock.ogg', 50,0)
+				light_color = "#E600E6"
+				set_light(3)
 
 /obj/machinery/power/generator/process()
 	if(stat & (NOPOWER|BROKEN))
@@ -118,14 +168,145 @@
 			var/datum/gas_mixture/cold_circ_air1 = cold_circ.get_outlet_air()
 			cold_circ_air1.merge(cold_air)
 
-	var/genlev = max(0, min( round(11 * lastgen / 100000), 11))
-	var/circ = "[cold_circ && cold_circ.last_pressure_delta > 0 ? "1" : "0"][hot_circ && hot_circ.last_pressure_delta > 0 ? "1" : "0"]"
-	if((genlev != lastgenlev) || (circ != lastcirc))
+	var/genlev = max(0, min(round(26 * lastgen / 4000000), 26)) // raised 2MW toplevel to 3MW, dudes were hitting 2mw way too easily
+	if((genlev != lastgenlev) && !spam_limiter)
+		spam_limiter = TRUE
 		lastgenlev = genlev
-		lastcirc = circ
 		update_icon()
-
+		if(!genlev)
+			running = FALSE
+		else if(genlev && !running)
+			playsound(loc, sound_tractorrev, 55, 0)
+			running = TRUE
+		addtimer(CALLBACK(src, .proc/reset_spam_limiter), 5)
 	updateDialog()
+
+	// engine looping sounds and hazards
+	if(lastgenlev > 0)
+		if(grump < 0) // grumpcode
+			grump = 0 // no negative grump plz
+		grump++ // get grump'd
+		if(grump >= 100 && prob(5))
+			playsound(loc, pick(sounds_enginegrump), 70, 0)
+			visible_message("<span class='warning'>[src] makes [pick(grump_prefix)] [pick(grump_suffix)]!</span>")
+			grump -= 5
+	switch(lastgenlev)
+		if(0)
+			return
+		if(1 to 2)
+			playsound(loc, sound_engine1, 60, 0)
+			if(prob(5))
+				playsound(loc, pick(sounds_engine), 70, 0)
+		if(3 to 11)
+			playsound(loc, sound_engine1, 60, 0)
+		if(12 to 15)
+			playsound(loc, sound_engine2, 60, 0)
+		if(16 to 18)
+			playsound(loc, sound_bellalert, 60, 0)
+			if(prob(5))
+				do_sparks(2, 1, get_turf(src))
+		if(19 to 21)
+			playsound(loc, sound_warningbuzzer, 50, 0)
+			if (prob(5))
+				var/datum/effect_system/smoke_spread/bad/smoke = new
+				smoke.set_up(1, 0, loc)
+				smoke.attach(src)
+				smoke.start()
+				visible_message("<span class='warning'>[src] starts smoking!</span>")
+			if(!grumping && grump >= 100 && prob(5))
+				grumping = TRUE
+				playsound(loc, 'sound/goonstation/machines/engine_grump1.ogg', 50, 0)
+				visible_message("<span class='warning'>[src] erupts in flame!</span>")
+				fireflash(src, 1)
+				grumping = 0
+				grump -= 10
+		if(22 to 23)
+			playsound(loc, sound_engine_alert1, 55, 0)
+			if(prob(5))
+				zapStuff()
+			if(prob(5))
+				var/datum/effect_system/smoke_spread/bad/smoke = new
+				smoke.set_up(1, 0, loc)
+				smoke.attach(src)
+				smoke.start()
+				visible_message("<span class='warning'>[src] starts smoking!</span>")
+			if(!grumping && grump >= 100 && prob(5))
+				grumping = TRUE
+				playsound(loc, 'sound/goonstation/machines/engine_grump1.ogg', 50, 0)
+				visible_message("<span class='warning'>[src] erupts in flame!</span>")
+				fireflash(src, rand(1, 3))
+				grumping = FALSE
+				grump -= 30
+
+		if(24 to 25)
+			playsound(loc, sound_engine_alert1, 55, 0)
+			if(prob(10))
+				zapStuff()
+			if(prob(5))
+				var/datum/effect_system/smoke_spread/bad/smoke = new
+				smoke.set_up(1, 0, loc)
+				smoke.attach(src)
+				smoke.start()
+				visible_message("<span class='warning'>[src] starts smoking!</span>")
+			if (!grumping && grump >= 100 && prob(10)) // probably not good if this happens several times in a row
+				grumping = TRUE
+				playsound(loc, 'sound/goonstation/weapons/rocket.ogg', 50, 0)
+				visible_message("<span class='warning'>[src] explodes in flame!</span>")
+				var/firesize = rand(1, 4)
+				fireflash(src, firesize)
+				for(var/atom/movable/AM in view(firesize, loc)) // fuck up those jerkbag engineers
+					if(AM.anchored)
+						continue
+					if(isliving(AM))
+						var/mob/living/L = AM
+						L.Weaken(8)
+						L.adjustBruteLoss(10)
+						var/atom/targetTurf = get_edge_target_turf(L, get_dir(src, get_step_away(L, src)))
+						L.throw_at(targetTurf, 200, 4)
+					else if(prob(15)) // cut down the number of other junk things that get blown around
+						var/atom/targetTurf = get_edge_target_turf(AM, get_dir(src, get_step_away(AM, src)))
+						AM.throw_at(targetTurf, 200, 4)
+				grumping = FALSE
+				grump -= 30
+
+		if(26 to INFINITY)
+			playsound(loc, sound_engine_alert3, 55, 0)
+			if(!grumping && grump >= 100 && prob(6))
+				grumping = TRUE
+				visible_message("<span class='danger'>[src] [pick("resonates", "shakes", "rumbles", "grumbles", "vibrates", "roars")] [pick("dangerously", "strangely", "ominously", "frighteningly", "grumpily")]!</span>")
+				playsound(loc, 'sound/effects/explosionfar.ogg', 65, 1)
+				for(var/obj/structure/window/W in range(6, src.loc)) // smash nearby windows
+					if(W.max_integrity >= 80) // plasma glass or better, no break please and thank you
+						continue
+					if(prob(get_dist(W, loc) * 6))
+						continue
+					W.take_damage(max_integrity, BRUTE, 0, FALSE)
+				for(var/mob/living/L in range(6, loc))
+					shake_camera(L, 3, 2)
+					L.Weaken(1)
+				for(var/turf/simulated/S in range(rand(1, 3), loc))
+					animate_shake(S, 1, 1, 1)
+				grumping = FALSE
+				grump -= 30
+
+				if(lastgen >= 10000000)
+					for(var/turf/T in range(6, src))
+						var/T_dist = get_dist(T, src)
+						var/T_effect_prob = 100 * (1 - (max(T_dist - 1, 1) / 5))
+
+						for(var/obj/item/I in T)
+							if(prob(T_effect_prob))
+								animate_float(I, 1, 3, return_normal = TRUE)
+
+			if(prob(33))
+				zapStuff()
+			if(prob(5))
+				visible_message("<span class='warning'>[src] [pick("rumbles", "groans", "shudders", "grustles", "hums", "thrums")] [pick("ominously", "oddly", "strangely", "oddly", "worringly", "softly", "loudly")]!</span>")
+			else if(prob(2))
+				visible_message("<span class='danger'>[src] hungers!</span>")
+
+/obj/machinery/power/generator/proc/reset_spam_limiter()
+	spam_limiter = FALSE
 
 /obj/machinery/power/generator/attack_ai(mob/user)
 	return attack_hand(user)
@@ -184,7 +365,7 @@
 
 		t += "<div class='statusDisplay'>"
 
-		t += "Output: [round(lastgen)] W"
+		t += "Output: [engineering_notation(lastgen)]W"
 
 		t += "<BR>"
 

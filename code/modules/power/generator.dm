@@ -108,10 +108,10 @@
 				set_light(0)
 			if(1 to 11)
 				light_color = "#FFFFFF"
-				set_light(1)
+				set_light(2)
 			if(12 to 15)
 				light_color = "#4D4DE6"
-				set_light(1)
+				set_light(2)
 			if(16 to 17)
 				light_color =  "#E6E61A"
 				set_light(2)

@@ -2,8 +2,8 @@
 	name = "thermoelectric generator"
 	desc = "It's a high efficiency thermoelectric generator."
 	icon_state = "teg"
-	anchored = 0
-	density = 1
+	anchored = FALSE
+	density = TRUE
 	use_power = NO_POWER_USE
 
 	var/obj/machinery/atmospherics/binary/circulator/cold_circ
@@ -16,16 +16,17 @@
 	var/lastgenlev = -1
 	var/lastcirc = "00"
 
-/obj/machinery/power/generator/New()
-	..()
+/obj/machinery/power/generator/Initialize(mapload)
+	. = ..()
+	connect()
 	update_desc()
-
-/obj/machinery/power/generator/proc/update_desc()
-	desc = initial(desc) + " Its cold circulator is located on the [dir2text(cold_dir)] side, and its heat circulator is located on the [dir2text(hot_dir)] side."
 
 /obj/machinery/power/generator/Destroy()
 	disconnect()
 	return ..()
+
+/obj/machinery/power/generator/proc/update_desc()
+	desc = initial(desc) + " Its cold circulator is located on the [dir2text(cold_dir)] side, and its heat circulator is located on the [dir2text(hot_dir)] side."
 
 /obj/machinery/power/generator/proc/disconnect()
 	if(cold_circ)
@@ -34,10 +35,6 @@
 		hot_circ.generator = null
 	if(powernet)
 		disconnect_from_network()
-
-/obj/machinery/power/generator/Initialize()
-	..()
-	connect()
 
 /obj/machinery/power/generator/proc/connect()
 	connect_to_network()
@@ -90,24 +87,14 @@
 
 	if(powernet)
 
-		//log_debug("cold_circ and hot_circ pass")
-
 		var/datum/gas_mixture/cold_air = cold_circ.return_transfer_air()
 		var/datum/gas_mixture/hot_air = hot_circ.return_transfer_air()
 
-		//log_debug("hot_air = [hot_air]; cold_air = [cold_air];")
-
 		if(cold_air && hot_air)
-
-			//log_debug("hot_air = [hot_air] temperature = [hot_air.temperature]; cold_air = [cold_air] temperature = [hot_air.temperature];")
-
-			//log_debug("coldair and hotair pass")
 			var/cold_air_heat_capacity = cold_air.heat_capacity()
 			var/hot_air_heat_capacity = hot_air.heat_capacity()
 
 			var/delta_temperature = hot_air.temperature - cold_air.temperature
-
-			//log_debug("delta_temperature = [delta_temperature]; cold_air_heat_capacity = [cold_air_heat_capacity]; hot_air_heat_capacity = [hot_air_heat_capacity]")
 
 			if(delta_temperature > 0 && cold_air_heat_capacity > 0 && hot_air_heat_capacity > 0)
 				var/efficiency = 0.65
@@ -117,12 +104,8 @@
 				var/heat = energy_transfer * (1 - efficiency)
 				lastgen = energy_transfer * efficiency
 
-				//log_debug("lastgen = [lastgen]; heat = [heat]; delta_temperature = [delta_temperature]; hot_air_heat_capacity = [hot_air_heat_capacity]; cold_air_heat_capacity = [cold_air_heat_capacity];")
-
 				hot_air.temperature = hot_air.temperature - energy_transfer / hot_air_heat_capacity
 				cold_air.temperature = cold_air.temperature + heat / cold_air_heat_capacity
-
-				//log_debug("POWER: [lastgen] W generated at [efficiency * 100]% efficiency and sinks sizes [cold_air_heat_capacity], [hot_air_heat_capacity]")
 
 				add_avail(lastgen)
 		// update icon overlays only if displayed level has changed
@@ -158,17 +141,18 @@
 		return
 	interact(user)
 
-/obj/machinery/power/generator/attackby(obj/item/W as obj, mob/user as mob, params)
-	if(istype(W, /obj/item/wrench))
+/obj/machinery/power/generator/attackby(obj/item/I, mob/user, params)
+	if(iswrench(I))
 		anchored = !anchored
 		if(!anchored)
 			disconnect()
 			power_change()
 		else
 			connect()
-		playsound(loc, W.usesound, 50, 1)
+		playsound(loc, I.usesound, 50, 1)
 		to_chat(user, "<span class='notice'>You [anchored ? "secure" : "unsecure"] the bolts holding [src] to the floor.</span>")
-	else if(ismultitool(W))
+		return
+	if(ismultitool(I))
 		if(cold_dir == WEST)
 			cold_dir = EAST
 			hot_dir = WEST
@@ -184,10 +168,10 @@
 		connect()
 		to_chat(user, "<span class='notice'>You reverse the generator's circulator settings. The cold circulator is now on the [dir2text(cold_dir)] side, and the heat circulator is now on the [dir2text(hot_dir)] side.</span>")
 		update_desc()
-	else
-		..()
+		return
+	return ..()
 
-/obj/machinery/power/generator/proc/get_menu(include_link = 1)
+/obj/machinery/power/generator/proc/get_menu(include_link = TRUE)
 	var/t = ""
 	if(!powernet)
 		t += "<span class='bad'>Unable to connect to the power network!</span>"
@@ -228,19 +212,19 @@
 	popup.set_content(get_menu())
 	popup.set_title_image(user.browse_rsc_icon(src.icon, src.icon_state))
 	popup.open()
-	return 1
+	return TRUE
 
 /obj/machinery/power/generator/Topic(href, href_list)
 	if(..())
-		return 0
+		return FALSE
 	if( href_list["close"] )
 		usr << browse(null, "window=teg")
 		usr.unset_machine()
-		return 0
+		return FALSE
 	if( href_list["check"] )
 		if(!powernet || !cold_circ || !hot_circ)
 			connect()
-	return 1
+	return TRUE
 
 /obj/machinery/power/generator/power_change()
 	..()

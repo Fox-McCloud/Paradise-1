@@ -17,11 +17,11 @@
 
 	layer = 2.45 // Just above wires
 
-	anchored = 1
-	density = 1
+	anchored = TRUE
+	density = TRUE
 
-	can_unwrench = 1
-	var/side_inverted = 0
+	can_unwrench = TRUE
+	var/side_inverted = FALSE
 
 // Creating a custom circulator pipe subtype to be delivered through cargo
 /obj/item/pipe/circulator
@@ -30,6 +30,7 @@
 /obj/item/pipe/circulator/New(loc)
 	var/obj/machinery/atmospherics/binary/circulator/C = new /obj/machinery/atmospherics/binary/circulator(null)
 	..(loc, make_from = C)
+	qdel(C)
 
 /obj/machinery/atmospherics/binary/circulator/Destroy()
 	if(generator && generator.cold_circ == src)
@@ -75,41 +76,41 @@
 	update_icon()
 
 /obj/machinery/atmospherics/binary/circulator/proc/get_inlet_air()
-	if(side_inverted==0)
+	if(!side_inverted)
 		return air2
 	else
 		return air1
 
 /obj/machinery/atmospherics/binary/circulator/proc/get_outlet_air()
-	if(side_inverted==0)
+	if(!side_inverted)
 		return air1
 	else
 		return air2
 
 /obj/machinery/atmospherics/binary/circulator/proc/get_inlet_side()
-	if(dir==SOUTH||dir==NORTH)
-		if(side_inverted==0)
+	if(dir == SOUTH|| dir == NORTH)
+		if(!side_inverted)
 			return "South"
 		else
 			return "North"
 
 /obj/machinery/atmospherics/binary/circulator/proc/get_outlet_side()
-	if(dir==SOUTH||dir==NORTH)
-		if(side_inverted==0)
+	if(dir == SOUTH || dir == NORTH)
+		if(!side_inverted)
 			return "North"
 		else
 			return "South"
 
-/obj/machinery/atmospherics/binary/circulator/attackby(obj/item/W as obj, mob/user as mob, params)
-	if(ismultitool(W))
-		if(side_inverted == 0)
-			side_inverted = 1
+/obj/machinery/atmospherics/binary/circulator/attackby(obj/item/I, mob/user, params)
+	if(ismultitool(I))
+		if(!side_inverted)
+			side_inverted = TRUE
 		else
-			side_inverted = 0
+			side_inverted = FALSE
 		to_chat(user, "<span class='notice'>You reverse the circulator's valve settings. The inlet of the circulator is now on the [get_inlet_side(dir)] side.</span>")
 		desc = "A gas circulator pump and heat exchanger. Its input port is on the [get_inlet_side(dir)] side, and its output port is on the [get_outlet_side(dir)] side."
-	else
-		..()
+		return
+	return ..()
 
 /obj/machinery/atmospherics/binary/circulator/update_icon()
 	if(stat & (BROKEN|NOPOWER))
@@ -121,5 +122,3 @@
 			icon_state = "circ[side]-slow"
 	else
 		icon_state = "circ[side]-off"
-
-	return 1

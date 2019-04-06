@@ -1,5 +1,5 @@
 /obj/machinery/power/generator
-	name = "thermoelectric generator"
+	name = "generator"
 	desc = "It's a high efficiency thermoelectric generator."
 	icon = 'icons/goonstation/power/power.dmi'
 	icon_state = "teg"
@@ -19,8 +19,8 @@
 	var/spam_limiter = FALSE
 	var/efficiency_controller = 52
 
-	var/grump = 0 // best var 2013
-	var/grumping = FALSE // is the engine currently doing grumpy things
+	var/grump = 0
+	var/grumping = FALSE
 
 	var/list/grump_prefix = list("an upsetting", "an unsettling", "a scary", "a loud", "a sassy", "a grouchy", "a grumpy",
 								 "an awful", "a horrible", "a despicable", "a pretty rad", "a godawful")
@@ -48,7 +48,7 @@
 	disconnect()
 	return ..()
 
-/obj/machinery/light_construct/examine(mob/user)
+/obj/machinery/power/generator/examine(mob/user)
 	..()
 	to_chat(user, "Current Output: [engineering_notation(lastgen)]W")
 
@@ -147,7 +147,7 @@
 			var/delta_temperature = hot_air.temperature - cold_air.temperature
 
 			if(delta_temperature > 0 && cold_air_heat_capacity > 0 && hot_air_heat_capacity > 0)
-				var/efficiency = 0.65
+				var/efficiency = (1 - cold_air.temperature / hot_air.temperature) * (efficiency_controller * 0.01) //controller expressed as a percentage
 
 				var/energy_transfer = delta_temperature * hot_air_heat_capacity * cold_air_heat_capacity / (hot_air_heat_capacity + cold_air_heat_capacity)
 
@@ -285,7 +285,7 @@
 					shake_camera(L, 3, 2)
 					L.Weaken(1)
 				for(var/turf/simulated/S in range(rand(1, 3), loc))
-					animate_shake(S, 1, 1, 1)
+					animate_shake(S, 1, 2, 2)
 				grumping = FALSE
 				grump -= 30
 
@@ -307,6 +307,53 @@
 
 /obj/machinery/power/generator/proc/reset_spam_limiter()
 	spam_limiter = FALSE
+
+/obj/machinery/power/generator/proc/zapStuff()
+	var/atom/target = null
+	var/atom/last = src
+
+	var/list/starts = list()
+	for(var/atom/movable/AM in orange(3, src))
+		if(istype(AM, /obj/effect) || isobserver(AM))
+			continue
+		starts.Add(AM)
+
+	if(!starts.len)
+		return
+
+	if(prob(10))
+		var/person = null
+		person = (locate(/mob/living) in starts)
+		if(person)
+			target = person
+		else
+			target = pick(starts)
+	else
+		target = pick(starts)
+
+	if(isturf(target))
+		return
+
+	playsound(target, sound_bigzap, 40, 1)
+
+	for(var/count = 0, count < 3, count++)
+
+		if(!target)
+			break
+		last.Beam(target, icon_state = "lightning[rand(1, 12)]", icon = 'icons/effects/effects.dmi', time = 6)
+
+		if(isliving(target)) //Probably unsafe.
+			var/mob/living/L = target
+			L.adjustFireLoss(20)
+
+		var/list/next = list()
+		for(var/atom/movable/AM in orange(2, target))
+			if(istype(AM, /obj/effect) || isobserver(AM))
+				continue
+			next.Add(AM)
+
+		last = target
+		target = pick(next)
 
 /obj/machinery/power/generator/attack_ai(mob/user)
 	return attack_hand(user)
@@ -389,7 +436,7 @@
 /obj/machinery/power/generator/interact(mob/user)
 	user.set_machine(src)
 
-	var/datum/browser/popup = new(user, "teg", "Thermo-Electric Generator", 460, 300)
+	var/datum/browser/popup = new(user, "teg", "Generator", 460, 300)
 	popup.set_content(get_menu())
 	popup.set_title_image(user.browse_rsc_icon(src.icon, src.icon_state))
 	popup.open()
@@ -410,3 +457,46 @@
 /obj/machinery/power/generator/power_change()
 	..()
 	update_icon()
+
+/proc/engineering_notation(value = 0)
+	if(!value)
+		return "0 "
+
+	var/suffix = ""
+	var/power = round(log(10, value) / 3)
+	switch(power)
+		if(-8)
+			suffix = "y"
+		if(-7)
+			suffix = "z"
+		if(-6)
+			suffix = "a"
+		if(-5)
+			suffix = "f"
+		if (-4)
+			suffix = "p"
+		if(-3)
+			suffix = "n"
+		if(-2)
+			suffix = "&#956;"
+		if(-1)
+			suffix = "m"
+		if(1)
+			suffix = "k"
+		if(2)
+			suffix = "M"
+		if(3)
+			suffix = "G"
+		if(4)
+			suffix = "T"
+		if(5)
+			suffix = "P"
+		if(6)
+			suffix = "E"
+		if(7)
+			suffix = "Z"
+		if(8)
+			suffix = "Y"
+
+	value = round((value / (10 ** (3 * power))), 0.001)
+	return "[value] [suffix]"

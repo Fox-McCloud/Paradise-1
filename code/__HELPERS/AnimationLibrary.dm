@@ -23,7 +23,7 @@
 	var/side = pick(-1, 1)
 	animate(A, pixel_x = rand(-64, 64), pixel_y = rand(-64, 64), transform = matrix(floatdegrees * (side == 1 ? 1:-1), MATRIX_ROTATE), time = 10, alpha = 0, easing = SINE_EASING)
 
-/proc/animate_float(var/atom/A, var/loopnum = -1, floatspeed = 20, random_side = 1)
+/proc/animate_float(var/atom/A, var/loopnum = -1, floatspeed = 20, random_side = 1, return_normal = FALSE)
 	if(!istype(A))
 		return
 	var/floatdegrees = rand(5, 20)
@@ -34,6 +34,8 @@
 	spawn(rand(1,10))
 		animate(A, pixel_y = 32, transform = matrix(floatdegrees * (side == 1 ? 1:-1), MATRIX_ROTATE), time = floatspeed, loop = loopnum, easing = SINE_EASING)
 		animate(pixel_y = 0, transform = matrix(floatdegrees * (side == 1 ? -1:1), MATRIX_ROTATE), time = floatspeed, loop = loopnum, easing = SINE_EASING)
+		if(return_normal)
+			animate(transform = null, time = floatspeed + 1, easing = SINE_EASING)
 
 /proc/animate_levitate(var/atom/A, var/loopnum = -1, floatspeed = 20, random_side = 1)
 	if(!istype(A))

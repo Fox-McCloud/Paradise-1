@@ -1,8 +1,8 @@
 //node1, air1, network1 correspond to input
 //node2, air2, network2 correspond to output
 /obj/machinery/atmospherics/binary/circulator
-	name = "circulator/heat exchanger"
-	desc = "A gas circulator pump and heat exchanger. Its input port is on the south side, and its output port is on the north side."
+	name = "gas circulator"
+	desc = "It's the gas circulator of a thermoeletric generator. Its input port is on the south side, and its output port is on the north side."
 	icon = 'icons/goonstation/power/power.dmi'
 	icon_state = "circ1-off"
 
@@ -108,7 +108,7 @@
 		else
 			side_inverted = FALSE
 		to_chat(user, "<span class='notice'>You reverse the circulator's valve settings. The inlet of the circulator is now on the [get_inlet_side(dir)] side.</span>")
-		desc = "A gas circulator pump and heat exchanger. Its input port is on the [get_inlet_side(dir)] side, and its output port is on the [get_outlet_side(dir)] side."
+		desc = "It's the gas circulator of a thermoeletric generator. Its input port is on the [get_inlet_side(dir)] side, and its output port is on the [get_outlet_side(dir)] side."
 		return
 	return ..()
 

@@ -200,9 +200,6 @@
 	else
 		return ..()
 
-/obj/machinery/door/airlock/plasma/BlockSuperconductivity() //we don't stop the heat~
-	return 0
-
 /obj/machinery/door/airlock/plasma/glass
 	opacity = 0
 	glass = TRUE

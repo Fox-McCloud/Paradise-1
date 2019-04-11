@@ -89,7 +89,7 @@
 	icon = 'icons/turf/walls/plasma_wall.dmi'
 	icon_state = "plasma"
 	sheet_type = /obj/item/stack/sheet/mineral/plasma
-	thermal_conductivity = 0.04
+	thermal_conductivity = 0.2
 	canSmoothWith = list(/turf/simulated/wall/mineral/plasma, /obj/structure/falsewall/plasma)
 
 /turf/simulated/wall/mineral/plasma/attackby(obj/item/W as obj, mob/user as mob)

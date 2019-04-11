@@ -76,9 +76,6 @@
 	resintype = "wall"
 	canSmoothWith = list(/obj/structure/alien/resin/wall, /obj/structure/alien/resin/membrane)
 
-/obj/structure/alien/resin/wall/BlockSuperconductivity()
-	return 1
-
 /obj/structure/alien/resin/wall/shadowling //For chrysalis
 	name = "chrysalis wall"
 	desc = "Some sort of purple substance in an egglike shape. It pulses and throbs from within and seems impenetrable."

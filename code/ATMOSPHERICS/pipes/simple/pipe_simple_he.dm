@@ -7,30 +7,17 @@
 	var/surface = 2
 
 	minimum_temperature_difference = 20
-	thermal_conductivity = OPEN_HEAT_TRANSFER_COEFFICIENT
+	thermal_conductivity = WINDOW_HEAT_TRANSFER_COEFFICIENT
 
 	color = "#404040"
 	buckle_lying = 1
 	var/icon_temperature = T20C //stop small changes in temperature causing icon refresh
 
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging/process_atmos()
-	var/environment_temperature = 0
+	..()
 	var/datum/gas_mixture/pipe_air = return_air()
 	if(!pipe_air)
 		return
-
-	var/turf/simulated/T = loc
-	if(istype(T))
-		if(T.blocks_air)
-			environment_temperature = T.temperature
-		else
-			var/datum/gas_mixture/environment = T.return_air()
-			environment_temperature = environment.temperature
-	else
-		environment_temperature = T.temperature
-
-	if(abs(environment_temperature-pipe_air.temperature) > minimum_temperature_difference)
-		parent.temperature_interact(T, volume, thermal_conductivity)
 
 	//Heat causes pipe to glow
 	if(pipe_air.temperature && (icon_temperature > 500 || pipe_air.temperature > 500)) //glow starts at 500K

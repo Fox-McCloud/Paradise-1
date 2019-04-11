@@ -460,11 +460,6 @@ var/global/wcCommon = pick(list("#379963", "#0d8395", "#58b5c3", "#49e46e", "#8f
 		crack_overlay = image('icons/obj/structures.dmi',"damage[ratio]",-(layer+0.1))
 		overlays += crack_overlay
 
-/obj/structure/window/temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
-	..()
-	if(exposed_temperature > (T0C + heat_resistance))
-		take_damage(round(exposed_volume / 100), BURN, 0, 0)
-
 /obj/structure/window/GetExplosionBlock()
 	return reinf && fulltile ? real_explosion_block : 0
 
@@ -554,9 +549,6 @@ var/global/wcCommon = pick(list("#379963", "#0d8395", "#58b5c3", "#49e46e", "#8f
 	explosion_block = 1
 	armor = list("melee" = 75, "bullet" = 5, "laser" = 0, "energy" = 0, "bomb" = 45, "bio" = 100, "rad" = 100)
 
-/obj/structure/window/plasmabasic/BlockSuperconductivity()
-	return 1
-
 /obj/structure/window/plasmareinforced
 	name = "reinforced plasma window"
 	desc = "A plasma-glass alloy window, with rods supporting it. It looks hopelessly tough to break. It also looks completely fireproof, considering how basic plasma windows are insanely fireproof."
@@ -567,12 +559,6 @@ var/global/wcCommon = pick(list("#379963", "#0d8395", "#58b5c3", "#49e46e", "#8f
 	max_integrity = 160
 	explosion_block = 2
 	armor = list("melee" = 85, "bullet" = 20, "laser" = 0, "energy" = 0, "bomb" = 60, "bio" = 100, "rad" = 100)
-
-/obj/structure/window/plasmareinforced/temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
-	return
-
-/obj/structure/window/plasmareinforced/BlockSuperconductivity()
-	return 1 //okay this SHOULD MAKE THE TOXINS CHAMBER WORK
 
 /obj/structure/window/full
 	glass_amount = 2
@@ -615,9 +601,6 @@ var/global/wcCommon = pick(list("#379963", "#0d8395", "#58b5c3", "#49e46e", "#8f
 	max_integrity = 320
 	explosion_block = 2
 	armor = list("melee" = 85, "bullet" = 20, "laser" = 0, "energy" = 0, "bomb" = 60, "bio" = 100, "rad" = 100)
-
-/obj/structure/window/full/plasmareinforced/temperature_expose(datum/gas_mixture/air, exposed_temperature, exposed_volume)
-	return
 
 /obj/structure/window/full/reinforced
 	name = "reinforced window"

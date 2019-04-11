@@ -20,8 +20,8 @@ var/list/icons_to_ignore_at_floor_init = list("damaged1","damaged2","damaged3","
 
 	var/icon_regular_floor = "floor" //used to remember what icon the tile should have by default
 	var/icon_plating = "plating"
-	thermal_conductivity = 0.040
-	heat_capacity = 10000
+	thermal_conductivity = 0.04
+	heat_capacity = 225000
 	var/lava = 0
 	var/broken = 0
 	var/burnt = 0

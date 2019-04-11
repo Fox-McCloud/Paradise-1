@@ -57,8 +57,8 @@ turf/CanPass(atom/movable/mover, turf/target, height=1.5)
 
 		return 1
 
-/atom/movable/proc/BlockSuperconductivity() // objects that block air and don't let superconductivity act. Only firelocks atm.
-	return 0
+/atom/movable/proc/BlockSuperconductivity() // superconducting super-LINDA. Nothing blocks superconductivity. May the station forever bathe in the seething fire of hellburns.
+	return FALSE
 
 /turf/proc/CalculateAdjacentTurfs()
 	atmos_adjacent_turfs_amount = 0

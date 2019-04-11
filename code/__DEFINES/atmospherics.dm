@@ -17,12 +17,12 @@
 #define M_CELL_WITH_RATIO		(MOLES_CELLSTANDARD * 0.005) //compared against for superconductivity
 #define O2STANDARD				0.21	//percentage of oxygen in a normal mixture of air
 #define N2STANDARD				0.79	//same but for nitrogen
-#define MOLES_O2STANDARD		(MOLES_CELLSTANDARD*O2STANDARD)	// O2 standard value (21%)
-#define MOLES_N2STANDARD		(MOLES_CELLSTANDARD*N2STANDARD)	// N2 standard value (79%)
+#define MOLES_O2STANDARD		MOLES_CELLSTANDARD*O2STANDARD	// O2 standard value (21%)
+#define MOLES_N2STANDARD		MOLES_CELLSTANDARD*N2STANDARD	// N2 standard value (79%)
 #define CELL_VOLUME				2500	//liters in a cell
 #define BREATH_VOLUME			0.5		//liters in a normal breath
 #define BREATH_MOLES 			(ONE_ATMOSPHERE * BREATH_VOLUME /(T20C*R_IDEAL_GAS_EQUATION))
-#define BREATH_PERCENTAGE		(BREATH_VOLUME/CELL_VOLUME)					//Amount of air to take a from a tile
+#define BREATH_PERCENTAGE		BREATH_VOLUME/CELL_VOLUME					//Amount of air to take a from a tile
 
 //EXCITED GROUPS
 #define MINIMUM_AIR_RATIO_TO_SUSPEND				0.005	//Minimum ratio of air that must move to/from a tile to suspend group processing
@@ -32,31 +32,31 @@
 #define MINIMUM_TEMPERATURE_RATIO_TO_SUSPEND		0.012
 #define MINIMUM_TEMPERATURE_DELTA_TO_SUSPEND		4		//Minimum temperature difference before group processing is suspended
 #define MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER		0.5		//Minimum temperature difference before the gas temperatures are just set to be equal
-#define MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION		(T20C+10)
-#define MINIMUM_TEMPERATURE_START_SUPERCONDUCTION	(T20C+200)
+#define MINIMUM_TEMPERATURE_FOR_SUPERCONDUCTION		T20C+10
+#define MINIMUM_TEMPERATURE_START_SUPERCONDUCTION	T20C+200
 
 //HEAT TRANSFER COEFFICIENTS
 //Must be between 0 and 1. Values closer to 1 equalize temperature faster
 //Should not exceed 0.4 else strange heat flow occur
 #define FLOOR_HEAT_TRANSFER_COEFFICIENT		0.15
-#define WALL_HEAT_TRANSFER_COEFFICIENT		0.0
+#define WALL_HEAT_TRANSFER_COEFFICIENT		0.12
 #define OPEN_HEAT_TRANSFER_COEFFICIENT		0.4
-#define WINDOW_HEAT_TRANSFER_COEFFICIENT	0.1		//a hack for now
+#define WINDOW_HEAT_TRANSFER_COEFFICIENT	0.18	//a hack for now
 #define HEAT_CAPACITY_VACUUM				700000	//a hack to help make vacuums "cold", sacrificing realism for gameplay
 
 //FIRE
-#define FIRE_MINIMUM_TEMPERATURE_TO_SPREAD	(150+T0C)
-#define FIRE_MINIMUM_TEMPERATURE_TO_EXIST	(100+T0C)
+#define FIRE_MINIMUM_TEMPERATURE_TO_SPREAD	120+T0C
+#define FIRE_MINIMUM_TEMPERATURE_TO_EXIST	100+T0C
 #define FIRE_SPREAD_RADIOSITY_SCALE			0.85
 #define FIRE_CARBON_ENERGY_RELEASED			500000	//Amount of heat released per mole of burnt carbon into the tile
 #define FIRE_PLASMA_ENERGY_RELEASED			3000000	//Amount of heat released per mole of burnt plasma into the tile
-#define FIRE_GROWTH_RATE					40000	//For small fires
+#define FIRE_GROWTH_RATE					25000	//For small fires
 
 //Plasma fire properties
 #define OXYGEN_BURN_RATE_BASE				1.4
 #define PLASMA_BURN_RATE_DELTA				4
-#define PLASMA_MINIMUM_BURN_TEMPERATURE		(100+T0C)
-#define PLASMA_UPPER_TEMPERATURE			(1370+T0C)
+#define PLASMA_MINIMUM_BURN_TEMPERATURE		100+T0C
+#define PLASMA_UPPER_TEMPERATURE			2370+T0C
 #define PLASMA_MINIMUM_OXYGEN_NEEDED		2
 #define PLASMA_MINIMUM_OXYGEN_PLASMA_RATIO	30
 #define PLASMA_OXYGEN_FULLBURN				10

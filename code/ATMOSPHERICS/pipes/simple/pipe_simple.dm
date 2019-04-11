@@ -14,7 +14,7 @@
 	var/obj/machinery/atmospherics/node2
 
 	var/minimum_temperature_difference = 300
-	var/thermal_conductivity = 0 //WALL_HEAT_TRANSFER_COEFFICIENT No
+	var/thermal_conductivity = WALL_HEAT_TRANSFER_COEFFICIENT
 
 	var/maximum_pressure = 70*ONE_ATMOSPHERE
 	var/fatigue_pressure = 55*ONE_ATMOSPHERE
@@ -70,6 +70,25 @@
 		var/turf/T = loc			// hide if turf is not intact
 		hide(T.intact)
 		update_icon()
+
+/obj/machinery/atmospherics/pipe/simple/process_atmos()
+	var/environment_temperature = 0
+	var/datum/gas_mixture/pipe_air = return_air()
+	if(!pipe_air)
+		return
+
+	var/turf/simulated/T = loc
+	if(istype(T))
+		if(T.blocks_air)
+			environment_temperature = T.temperature
+		else
+			var/datum/gas_mixture/environment = T.return_air()
+			environment_temperature = environment.temperature
+	else
+		environment_temperature = T.temperature
+
+	if(abs(environment_temperature-pipe_air.temperature) > minimum_temperature_difference)
+		parent.temperature_interact(T, volume, thermal_conductivity)
 
 /obj/machinery/atmospherics/pipe/simple/check_pressure(pressure)
 	var/datum/gas_mixture/environment = loc.return_air()

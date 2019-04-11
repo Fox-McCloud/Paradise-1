@@ -85,7 +85,7 @@
 			volume = location.air.fuel_burnt * FIRE_GROWTH_RATE
 			temperature = location.air.temperature
 	else
-		var/datum/gas_mixture/affected = location.air.remove_ratio(volume / location.air.volume)
+		var/datum/gas_mixture/affected = location.air.remove_ratio(volume/ max((location.air.volume / 5), 1))
 		affected.temperature = temperature
 		affected.react()
 		temperature = affected.temperature
@@ -136,9 +136,6 @@
 			var/radiated_temperature = location.air.temperature*FIRE_SPREAD_RADIOSITY_SCALE
 			for(var/direction in cardinal)
 				if(!(location.atmos_adjacent_turfs & direction))
-					var/turf/simulated/wall/W = get_step(src, direction)
-					if(istype(W))
-						W.adjacent_fire_act(W, radiated_temperature)
 					continue
 				var/turf/simulated/T = get_step(src, direction)
 				if(istype(T) && !T.active_hotspot)
@@ -150,14 +147,6 @@
 		else
 			icon_state = "1"
 
-	if(temperature > location.max_fire_temperature_sustained)
-		location.max_fire_temperature_sustained = temperature
-
-	if(location.heat_capacity && temperature > location.heat_capacity)
-		location.to_be_destroyed = 1
-		/*if(prob(25))
-			location.ReplaceWithSpace()
-			return 0*/
 	return 1
 
 // Garbage collect itself by nulling reference to it
@@ -165,29 +154,11 @@
 /obj/effect/hotspot/Destroy()
 	set_light(0)
 	SSair.hotspots -= src
-	if(!fake)
-		DestroyTurf()
 	if(istype(loc, /turf/simulated))
 		var/turf/simulated/T = loc
 		if(T.active_hotspot == src)
 			T.active_hotspot = null
 	return ..()
-
-/obj/effect/hotspot/proc/DestroyTurf()
-
-	if(istype(loc, /turf/simulated))
-		var/turf/simulated/T = loc
-		if(T.to_be_destroyed)
-			var/chance_of_deletion
-			if(T.heat_capacity) //beware of division by zero
-				chance_of_deletion = T.max_fire_temperature_sustained / T.heat_capacity * 8 //there is no problem with prob(23456), min() was redundant --rastaf0
-			else
-				chance_of_deletion = 100
-			if(prob(chance_of_deletion))
-				T.ChangeTurf(/turf/space)
-			else
-				T.to_be_destroyed = 0
-				T.max_fire_temperature_sustained = 0
 
 /obj/effect/hotspot/Crossed(mob/living/L)
 	..()

@@ -116,7 +116,7 @@
 
 /turf/simulated/proc/mimic_temperature_solid(turf/model, conduction_coefficient)
 	var/delta_temperature = (temperature_archived - model.temperature)
-	if((heat_capacity > 0) && (abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER))
+	if((heat_capacity > 0) && (model.heat_capacity > 0) && (abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER))
 
 		var/heat = conduction_coefficient*delta_temperature* \
 			(heat_capacity*model.heat_capacity/(heat_capacity+model.heat_capacity))
@@ -124,13 +124,13 @@
 
 /turf/simulated/proc/share_temperature_mutual_solid(turf/simulated/sharer, conduction_coefficient)
 	var/delta_temperature = (temperature_archived - sharer.temperature_archived)
-	if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER && heat_capacity && sharer.heat_capacity)
+	if(abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER)
 
 		var/heat = conduction_coefficient*delta_temperature* \
 			(heat_capacity*sharer.heat_capacity/(heat_capacity+sharer.heat_capacity))
 
 		temperature -= heat/heat_capacity
-		sharer.temperature += heat/sharer.heat_capacity
+		sharer.temperature += sharer.heat_capacity != 0 ? heat/sharer.heat_capacity : 0
 
 
 
@@ -464,7 +464,7 @@ turf/simulated/proc/super_conduct()
 			if(conductivity_directions&direction)
 				var/turf/neighbor = get_step(src,direction)
 
-				if(!neighbor.thermal_conductivity)
+				if(!neighbor)
 					continue
 
 				if(istype(neighbor, /turf/simulated)) //anything under this subtype will share in the exchange
@@ -531,7 +531,7 @@ turf/simulated/proc/radiate_to_spess() //Radiate excess tile heat to space
 		var/delta_temperature = (temperature_archived - 2.7) //hardcoded space temperature
 		if((heat_capacity > 0) && (abs(delta_temperature) > MINIMUM_TEMPERATURE_DELTA_TO_CONSIDER))
 
-			var/heat = thermal_conductivity*delta_temperature* \
+			var/heat = FLOOR_HEAT_TRANSFER_COEFFICIENT*delta_temperature* \
 				(heat_capacity*HEAT_CAPACITY_VACUUM/(heat_capacity+HEAT_CAPACITY_VACUUM)) //700000 is the heat_capacity from a space turf, hardcoded here
 			temperature -= heat/heat_capacity
 

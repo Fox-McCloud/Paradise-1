@@ -46,7 +46,7 @@
 			if(!iscarbon(user))
 				M.LAssailant = null
 			else
-				M.LAssailant = user
+				M.LAssailant = user.UID()
 
 			reagents.reaction(M, REAGENT_TOUCH)
 			reagents.clear_reagents()

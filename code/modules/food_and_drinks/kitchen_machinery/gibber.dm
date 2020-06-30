@@ -281,7 +281,7 @@
 		if(!iscarbon(user))
 			occupant.LAssailant = null
 		else
-			occupant.LAssailant = user
+			occupant.LAssailant = user.UID()
 
 	else //this looks ugly but it's better than a copy-pasted startgibbing proc override
 		occupant.create_attack_log("Was gibbed by <b>an autogibber (\the [src])</b>")

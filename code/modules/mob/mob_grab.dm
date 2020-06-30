@@ -280,7 +280,7 @@
 		if(!iscarbon(assailant))
 			affecting.LAssailant = null
 		else
-			affecting.LAssailant = assailant
+			affecting.LAssailant = assailant.UID()
 		hud.icon_state = "kill"
 		hud.name = "kill"
 		affecting.Stun(10) //10 ticks of ensured grab

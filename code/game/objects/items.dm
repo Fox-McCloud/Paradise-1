@@ -489,7 +489,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /image, image("icon" = 'icons/goonstation/effect
 	if(!iscarbon(user))
 		M.LAssailant = null
 	else
-		M.LAssailant = user
+		M.LAssailant = user.UID()
 
 	src.add_fingerprint(user)
 

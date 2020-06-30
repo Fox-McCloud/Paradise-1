@@ -52,7 +52,7 @@
 	if(!iscarbon(user))
 		M.LAssailant = null
 	else
-		M.LAssailant = user
+		M.LAssailant = user.UID()
 
 	if(!(istype(user, /mob/living/carbon/human) || SSticker) && SSticker.mode.name != "monkey")
 		to_chat(user, "<span class='warning'>You don't have the dexterity to do this!</span>")

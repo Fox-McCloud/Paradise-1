@@ -97,7 +97,7 @@
 			var/contained = injected.name
 			var/trans = R.trans_to(M, amount_per_transfer_from_this)
 			add_attack_logs(user, M, "Injected with [name] containing [contained], transfered [trans] units", injected.harmless ? ATKLOG_ALMOSTALL : null)
-			M.LAssailant = user
+			M.LAssailant = user.UID()
 			to_chat(user, "<span class='notice'>[trans] units injected. [R.total_volume] units remaining.</span>")
 	return
 

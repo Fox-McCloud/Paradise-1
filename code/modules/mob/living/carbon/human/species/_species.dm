@@ -441,7 +441,7 @@
 		if(!iscarbon(user))
 			target.LAssailant = null
 		else
-			target.LAssailant = user
+			target.LAssailant = user.UID()
 
 		var/damage = rand(user.dna.species.punchdamagelow, user.dna.species.punchdamagehigh)
 		damage += attack.damage
@@ -488,7 +488,7 @@
 			if(!iscarbon(user))
 				target.LAssailant = null
 			else
-				target.LAssailant = user
+				target.LAssailant = user.UID()
 			return
 
 		var/talked = 0	// BubbleWrap

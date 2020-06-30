@@ -288,7 +288,7 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 	if(!iscarbon(owner))
 		H.LAssailant = null
 	else
-		H.LAssailant = owner
+		H.LAssailant = owner.UID()
 	while(do_mob(owner, H, 50))
 		if(!(owner.mind in SSticker.mode.vampires))
 			to_chat(owner, "<span class='warning'>Your fangs have disappeared!</span>")

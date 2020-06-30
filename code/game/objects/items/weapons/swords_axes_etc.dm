@@ -64,7 +64,7 @@
 				if(!iscarbon(user))
 					target.LAssailant = null
 				else
-					target.LAssailant = user
+					target.LAssailant = user.UID()
 				cooldown = 1
 				spawn(40)
 					cooldown = 0

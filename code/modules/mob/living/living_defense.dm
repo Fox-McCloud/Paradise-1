@@ -264,7 +264,7 @@
 		return 0
 	user.put_in_active_hand(G)
 	G.synch()
-	LAssailant = user
+	LAssailant = user.UID()
 
 	playsound(src.loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 	/*if(user.dir == src.dir)

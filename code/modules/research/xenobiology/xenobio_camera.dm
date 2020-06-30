@@ -238,7 +238,7 @@
 		else if(X.monkeys >= 1)
 			var/mob/living/carbon/human/monkey/food = new /mob/living/carbon/human/monkey(remote_eye.loc)
 			SSmobs.cubemonkeys += food
-			food.LAssailant = C
+			food.LAssailant = C.UID()
 			X.monkeys --
 			to_chat(owner, "[X] now has [X.monkeys] monkeys left.")
 	else
@@ -431,7 +431,7 @@
 	if(turfarea.name == E.allowed_area || turfarea.xenobiology_compatible)
 		if(X.monkeys >= 1)
 			var/mob/living/carbon/human/monkey/food = new /mob/living/carbon/human/monkey(T)
-			food.LAssailant = C
+			food.LAssailant = C.UID()
 			X.monkeys --
 			X.monkeys = round(X.monkeys, 0.1)
 			to_chat(user, "[X] now has [X.monkeys] monkeys left.")

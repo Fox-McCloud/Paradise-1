@@ -40,8 +40,8 @@
 
 	var/number = 0 // Used to understand when someone is talking to it
 
-	var/mob/living/Target = null // AI variable - tells the slime to hunt this down
-	var/mob/living/Leader = null // AI variable - tells the slime to follow this person
+	var/Target = null // AI variable - tells the slime to hunt this down
+	var/Leader = null // AI variable - tells the slime to follow this person
 
 	var/attacked = 0 // Determines if it's been attacked recently. Can be any number, is a cooloff-ish variable
 	var/rabid = 0 // If set to 1, the slime will attack and eat anything it comes in contact with
@@ -98,10 +98,6 @@
 	for(var/A in actions)
 		var/datum/action/AC = A
 		AC.Remove(src)
-	Target = null
-	Leader = null
-	Friends.Cut()
-	speech_buffer.Cut()
 	return ..()
 
 /mob/living/simple_animal/slime/proc/set_colour(new_colour)
@@ -210,7 +206,7 @@
 		if(prob(probab))
 			if(istype(O, /obj/structure/window) || istype(O, /obj/structure/grille))
 				if(nutrition <= get_hunger_nutrition() && !Atkcool)
-					if (is_adult || prob(5))
+					if(is_adult || prob(5))
 						O.attack_slime(src)
 						Atkcool = TRUE
 						addtimer(VARSET_CALLBACK(src, Atkcool, FALSE), 4.5 SECONDS)
@@ -355,10 +351,10 @@
 				if(S.next_step(user, src))
 					return 1
 	if(istype(I, /obj/item/stack/sheet/mineral/plasma) && !stat) //Let's you feed slimes plasma.
-		if(user in Friends)
-			++Friends[user]
+		if(user.UID() in Friends)
+			++Friends[user.UID()]
 		else
-			Friends[user] = 1
+			Friends[user.UID()] = 1
 		to_chat(user, "<span class='notice'>You feed the slime the plasma. It chirps happily.</span>")
 		var/obj/item/stack/sheet/mineral/plasma/S = I
 		S.use(1)
@@ -440,7 +436,7 @@
 			. += "<span class='deadsay'>It appears to be alive but unresponsive.</span>"
 		if(getBruteLoss())
 			. += "<span class='warning'>"
-			if (getBruteLoss() < 40)
+			if(getBruteLoss() < 40)
 				. += "It has some punctures in its flesh!"
 			else
 				. += "<B>It has severe punctures and tears in its flesh!</B>"

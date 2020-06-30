@@ -36,9 +36,9 @@
 		return
 
 	var/hungry = 0
-	if (nutrition < get_starve_nutrition())
+	if(nutrition < get_starve_nutrition())
 		hungry = 2
-	else if (nutrition < get_grow_nutrition() && prob(25) || nutrition < get_hunger_nutrition())
+	else if(nutrition < get_grow_nutrition() && prob(25) || nutrition < get_hunger_nutrition())
 		hungry = 1
 
 	AIproc = 1
@@ -47,53 +47,55 @@
 		if(!canmove)  //also covers buckling. Not sure why buckled is in the while condition if we're going to immediately break, honestly
 			break
 
-		if(!Target || client)
+		var/mob/living/L = locateUID(Target)
+
+		if(!L || client)
 			break
 
-		if(Target.health <= -70 || Target.stat == DEAD)
+		if(L.health <= -70 || L.stat == DEAD)
 			Target = null
 			AIproc = 0
 			break
 
-		if(Target)
-			if(locate(/mob/living/simple_animal/slime) in Target.buckled_mobs)
+		if(L)
+			if(locate(/mob/living/simple_animal/slime) in L.buckled_mobs)
 				Target = null
 				AIproc = 0
 				break
 			if(!AIproc)
 				break
 
-			if(Target in view(1,src))
-				if(!CanFeedon(Target)) //If they're not able to be fed upon, ignore them.
+			if(L in view(1, src))
+				if(!CanFeedon(L)) //If they're not able to be fed upon, ignore them.
 					if(!Atkcool)
 						Atkcool = TRUE
 						addtimer(VARSET_CALLBACK(src, Atkcool, FALSE), 4.5 SECONDS)
 
-						if(Target.Adjacent(src))
-							Target.attack_slime(src)
+						if(L.Adjacent(src))
+							L.attack_slime(src)
 					break
-				if(!Target.lying && prob(80))
+				if(!L.lying && prob(80))
 
-					if(Target.client && Target.health >= 20)
+					if(L.client && L.health >= 20)
 						if(!Atkcool)
 							Atkcool = TRUE
 							addtimer(VARSET_CALLBACK(src, Atkcool, FALSE), 4.5 SECONDS)
 
-							if(Target.Adjacent(src))
-								Target.attack_slime(src)
+							if(L.Adjacent(src))
+								L.attack_slime(src)
 
 					else
-						if(!Atkcool && Target.Adjacent(src))
-							Feedon(Target)
+						if(!Atkcool && L.Adjacent(src))
+							Feedon(L)
 
 				else
-					if(!Atkcool && Target.Adjacent(src))
-						Feedon(Target)
+					if(!Atkcool && L.Adjacent(src))
+						Feedon(L)
 
-			else if(Target in view(7, src))
-				if(!Target.Adjacent(src))
+			else if(L in view(7, src))
+				if(!L.Adjacent(src))
 				// Bug of the month candidate: slimes were attempting to move to target only if it was directly next to them, which caused them to target things, but not approach them
-					step_to(src, Target)
+					step_to(src, L)
 			else
 				Target = null
 				AIproc = 0
@@ -168,7 +170,7 @@
 	if(M.stat == DEAD) // our victim died
 		if(!client)
 			if(!rabid && !attacked)
-				if(M.LAssailant && M.LAssailant != M)
+				if(M.LAssailant && M.LAssailant != M.UID())
 					if(prob(50))
 						if(!(M.LAssailant in Friends))
 							Friends[M.LAssailant] = 1
@@ -289,7 +291,7 @@
 
 		if(Target)
 			--target_patience
-			if (target_patience <= 0 || SStun > world.time || Discipline || attacked || docile) // Tired of chasing or something draws out attention
+			if(target_patience <= 0 || SStun > world.time || Discipline || attacked || docile) // Tired of chasing or something draws out attention
 				target_patience = 0
 				Target = null
 
@@ -298,26 +300,26 @@
 
 		var/hungry = 0 // determines if the slime is hungry
 
-		if (nutrition < get_starve_nutrition())
+		if(nutrition < get_starve_nutrition())
 			hungry = 2
-		else if (nutrition < get_grow_nutrition() && prob(25) || nutrition < get_hunger_nutrition())
+		else if(nutrition < get_grow_nutrition() && prob(25) || nutrition < get_hunger_nutrition())
 			hungry = 1
 
 		if(hungry == 2 && !client) // if a slime is starving, it starts losing its friends
-			if(Friends.len > 0 && prob(1))
-				var/mob/nofriend = pick(Friends)
+			if(length(Friends) && prob(1))
+				var/nofriend = pick(Friends)
 				--Friends[nofriend]
 
 		if(!Target)
 			if(will_hunt() && hungry || attacked || rabid) // Only add to the list if we need to
 				var/list/targets = list()
 
-				for(var/mob/living/L in view(7,src))
+				for(var/mob/living/L in view(7, src))
 
 					if(L.stat == DEAD) // Ignore dead mobs
 						continue
 
-					if(L in Friends) // No eating friends!
+					if(L.UID() in Friends) // No eating friends!
 						continue
 
 					var/ally = FALSE
@@ -338,34 +340,35 @@
 
 					targets += L // Possible target found!
 
-				if(targets.len > 0)
+				if(length(targets))
 					if(attacked || rabid || hungry == 2)
-						Target = targets[1] // I am attacked and am fighting back or so hungry I don't even care
+						var/mob/living/target = targets[1]
+						Target = target.UID() // I am attacked and am fighting back or so hungry I don't even care
 					else
 						for(var/mob/living/carbon/C in targets)
 							if(!Discipline && prob(5))
 								if(ishuman(C) || isalienadult(C))
-									Target = C
+									Target = C.UID()
 									break
 
 							if(islarva(C) || issmall(C))
-								Target = C
+								Target = C.UID()
 								break
 
-			if (Target)
+			if(Target)
 				target_patience = rand(5, 7)
 				if(is_adult)
 					target_patience += 3
 
 		if(!Target) // If we have no target, we are wandering or following orders
-			if (Leader)
+			if(locateUID(Leader))
 				if(holding_still)
 					holding_still = max(holding_still - 1, 0)
 				else if(canmove && isturf(loc))
-					step_to(src, Leader)
+					step_to(src, locateUID(Leader))
 
 			else if(hungry)
-				if (holding_still)
+				if(holding_still)
 					holding_still = max(holding_still - hungry, 0)
 				else if(canmove && isturf(loc) && prob(50))
 					step(src, pick(GLOB.cardinal))
@@ -373,7 +376,7 @@
 			else
 				if(holding_still)
 					holding_still = max(holding_still - 1, 0)
-				else if (docile && pulledby)
+				else if(docile && pulledby)
 					holding_still = 10
 				else if(canmove && isturf(loc) && prob(33))
 					step(src, pick(GLOB.cardinal))
@@ -388,20 +391,20 @@
 
 /mob/living/simple_animal/slime/proc/handle_mood()
 	var/newmood = ""
-	if (rabid || attacked)
+	if(rabid || attacked)
 		newmood = "angry"
-	else if (docile)
+	else if(docile)
 		newmood = ":3"
-	else if (Target)
+	else if(Target)
 		newmood = "mischievous"
 
-	if (!newmood)
-		if (Discipline && prob(25))
+	if(!newmood)
+		if(Discipline && prob(25))
 			newmood = "pout"
-		else if (prob(1))
+		else if(prob(1))
 			newmood = pick("sad", ":3", "pout")
 
-	if ((mood == "sad" || mood == ":3" || mood == "pout") && !newmood)
+	if((mood == "sad" || mood == ":3" || mood == "pout") && !newmood)
 		if(prob(75))
 			newmood = mood
 
@@ -412,21 +415,21 @@
 /mob/living/simple_animal/slime/proc/handle_speech()
 	//Speech understanding starts here
 	var/to_say
-	if(speech_buffer.len > 0)
+	if(length(speech_buffer))
 		var/who = speech_buffer[1] // Who said it?
 		var/phrase = speech_buffer[2] // What did they say?
 		if((findtext(phrase, num2text(number)) || findtext(phrase, "slimes"))) // Talking to us
 			if(findtext(phrase, "hello") || findtext(phrase, "hi"))
 				to_say = pick("Hello...", "Hi...")
 			else if(findtext(phrase, "follow"))
-				if(Leader)
+				if(locateUID(Leader))
 					if(Leader == who) // Already following him
 						to_say = pick("Yes...", "Lead...", "Follow...")
 					else if(Friends[who] > Friends[Leader]) // VIVA
 						Leader = who
-						to_say = "Yes... I follow [who]..."
+						to_say = "Yes... I follow [locateUID(who)]..."
 					else
-						to_say = "No... I follow [Leader]..."
+						to_say = "No... I follow [locateUID(Leader)]..."
 				else
 					if(Friends[who] >= SLIME_FRIENDSHIP_FOLLOW)
 						Leader = who
@@ -435,10 +438,10 @@
 						to_say = pick("No...", "I no follow...")
 			else if(findtext(phrase, "stop"))
 				if(buckled) // We are asked to stop feeding
-					if (Friends[who] >= SLIME_FRIENDSHIP_STOPEAT)
+					if(Friends[who] >= SLIME_FRIENDSHIP_STOPEAT)
 						Feedstop()
 						Target = null
-						if (Friends[who] < SLIME_FRIENDSHIP_STOPEAT_NOANGRY)
+						if(Friends[who] < SLIME_FRIENDSHIP_STOPEAT_NOANGRY)
 							--Friends[who]
 							to_say = "Grrr..." // I'm angry but I do it
 						else
@@ -451,7 +454,7 @@
 							to_say = "Grrr..." // I'm angry but I do it
 						else
 							to_say = "Fine..."
-				else if(Leader) // We are asked to stop following
+				else if(locateUID(Leader)) // We are asked to stop following
 					if(Leader == who)
 						to_say = "Yes... I stay..."
 						Leader = null
@@ -462,8 +465,8 @@
 						else
 							to_say = "No... keep follow..."
 			else if(findtext(phrase, "stay"))
-				if(Leader)
-					if (Leader == who)
+				if(locateUID(Leader))
+					if(Leader == who)
 						holding_still = Friends[who] * 10
 						to_say = "Yes... stay..."
 					else if(Friends[who] > Friends[Leader])
@@ -483,15 +486,15 @@
 					AIprocess() //Wake up the slime's Target AI, needed otherwise this doesn't work
 					to_say = "ATTACK!?!?"
 				else if(Friends[who] >= SLIME_FRIENDSHIP_ATTACK)
-					for(var/mob/living/L in view(7,src)-list(src,who))
+					for(var/mob/living/L in view(7,src) - list(src, locateUID(who)))
 						if(findtext(phrase, lowertext(L.name)))
 							if(isslime(L))
 								to_say = "NO... [L] slime friend"
 								--Friends[who] //Don't ask a slime to attack its friend
-							else if(!Friends[L] || Friends[L] < 1)
-								Target = L
-								AIprocess()//Wake up the slime's Target AI, needed otherwise this doesn't work
-								to_say = "Ok... I attack [Target]"
+							else if(!Friends[L.UID()] || Friends[L.UID()] < 1)
+								Target = L.UID()
+								AIprocess() //Wake up the slime's Target AI, needed otherwise this doesn't work
+								to_say = "Ok... I attack [locateUID(Target)]"
 							else
 								to_say = "No... like [L] ..."
 								--Friends[who] //Don't ask a slime to attack its friend
@@ -499,7 +502,7 @@
 				else
 					to_say = "No... no listen"
 
-		speech_buffer = list()
+		speech_buffer.Cut()
 
 	//Speech starts here
 	if(to_say)
@@ -514,9 +517,9 @@
 		for(var/mob/living/L in view(7,src))
 			if(isslime(L) && L != src)
 				++slimes_near
-				if (L.stat == DEAD)
+				if(L.stat == DEAD)
 					++dead_slimes
-			if(L in Friends)
+			if(L.UID() in Friends)
 				t += 20
 				friends_near += L
 		if(nutrition < get_hunger_nutrition())
@@ -526,7 +529,7 @@
 		if(prob(2) && prob(t))
 			var/phrases = list()
 			if(Target)
-				phrases += "[Target]... look yummy..."
+				phrases += "[locateUID(Target)]... look yummy..."
 			if(nutrition < get_starve_nutrition())
 				phrases += "So... hungry..."
 				phrases += "Very... hungry..."
@@ -610,7 +613,7 @@
 		return 0
 	if(hunger == 2 || rabid || attacked)
 		return 1
-	if(Leader)
+	if(locateUID(Leader))
 		return 0
 	if(holding_still)
 		return 0

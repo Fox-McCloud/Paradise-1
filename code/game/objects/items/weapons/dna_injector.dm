@@ -150,7 +150,7 @@
 	if(!iscarbon(user))
 		M.LAssailant = null
 	else
-		M.LAssailant = user
+		M.LAssailant = user.UID()
 
 	inject(M, user)
 	used = TRUE

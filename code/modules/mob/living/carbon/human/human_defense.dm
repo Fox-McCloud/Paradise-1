@@ -390,7 +390,7 @@ emp_act
 			if(!iscarbon(user))
 				LAssailant = null
 			else
-				LAssailant = user
+				LAssailant = user.UID()
 
 			qdel(src)
 

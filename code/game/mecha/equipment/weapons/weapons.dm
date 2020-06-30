@@ -169,7 +169,7 @@
 			if(!iscarbon(firer))
 				M.LAssailant = null
 			else
-				M.LAssailant = firer
+				M.LAssailant = firer.UID()
 		else
 			add_attack_logs(null, M, "Mecha-shot with <b>[src]</b>")
 	if(life <= 0)

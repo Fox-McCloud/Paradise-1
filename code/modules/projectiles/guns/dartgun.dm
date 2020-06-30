@@ -179,7 +179,7 @@
 						if(!iscarbon(user))
 							M.LAssailant = null
 						else
-							M.LAssailant = user
+							M.LAssailant = user.UID()
 
 					add_attack_logs(user, M, "Shot with dartgun containing [R]")
 

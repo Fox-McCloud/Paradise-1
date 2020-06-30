@@ -1072,7 +1072,7 @@ GLOBAL_LIST_INIT(ventcrawl_machinery, list(/obj/machinery/atmospherics/unary/ven
 	if(!iscarbon(user))
 		LAssailant = null
 	else
-		LAssailant = user
+		LAssailant = user.UID()
 
 
 /*TO DO - If/when stomach organs are introduced, override this at the human level sending the item to the stomach

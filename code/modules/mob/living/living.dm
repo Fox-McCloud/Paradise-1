@@ -955,7 +955,7 @@
 		if(!iscarbon(src))
 			M.LAssailant = null
 		else
-			M.LAssailant = usr
+			M.LAssailant = usr.UID()
 
 /mob/living/proc/check_pull()
 	if(pulling && !(pulling in orange(1)))

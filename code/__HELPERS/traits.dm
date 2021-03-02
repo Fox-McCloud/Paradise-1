@@ -171,8 +171,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define CHANGELING_DRAIN "drain"
 #define TRAIT_HULK "hulk"
 #define STASIS_MUTE "stasis"
-#define SCRYING_ORB "scrying-orb"
 #define CULT_EYES "cult_eyes"
+#define SCRYING_ORB "scrying-orb"
+#define HIS_GRACE_TRAIT "his-grace"
 #define DOGGO_SPACESUIT "doggo_spacesuit"
 #define FLOORCLUWNE "floorcluwne"
 
